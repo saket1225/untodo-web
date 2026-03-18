@@ -6,7 +6,7 @@
 import { db } from './firebase-config.js';
 import {
   collection, query, where, onSnapshot, addDoc, updateDoc, deleteDoc, doc,
-  getDocs, orderBy
+  getDocs
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 
 // ── State ──────────────────────────────────────────
@@ -106,9 +106,10 @@ function tasksRef() {
 
 function subscribeToDate(dateStr) {
   if (unsubscribe) unsubscribe();
-  const q = query(tasksRef(), where('logicalDate', '==', dateStr), orderBy('createdAt', 'asc'));
+  const q = query(tasksRef(), where('logicalDate', '==', dateStr));
   unsubscribe = onSnapshot(q, snap => {
     tasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    tasks.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
     renderTasks();
   }, err => {
     console.error('Firestore error:', err);
@@ -695,7 +696,7 @@ function startApp() {
 }
 
 // ── Event Binding ──────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   // Theme
   applyTheme();
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
@@ -793,4 +794,11 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     startApp();
   }
-});
+}
+
+// Modules are deferred - DOM is ready by the time this runs
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
