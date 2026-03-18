@@ -2,19 +2,206 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>untodo</title>
-  <meta name="description" content="A mindful task companion">
-  <meta name="theme-color" content="#C4473A">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%E5%86%86</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◉</text></svg>">
 </head>
 <body>
-  <div id="app"></div>
-  <script type="module" src="./firebase-config.js"></script>
-  <script type="module" src="./app.js"></script>
+  <div id="app">
+    <!-- Tab: Today -->
+    <div class="tab-content" id="tab-today">
+      <header class="header">
+        <div class="logo"><span class="logo-un">un</span><span class="logo-todo">todo</span></div>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+      </header>
+
+      <div class="date-nav">
+        <button class="date-arrow" id="date-prev">‹</button>
+        <span class="date-label" id="date-label"></span>
+        <button class="date-arrow" id="date-next">›</button>
+      </div>
+
+      <div class="past-banner" id="past-banner" style="display:none">
+        Viewing past day — tasks are locked
+      </div>
+
+      <div class="score-section" id="score-section" style="display:none">
+        <span class="score-badge" id="score-badge"></span>
+        <span class="score-label" id="score-label"></span>
+      </div>
+
+      <div class="add-task-form" id="add-task-form">
+        <div class="add-task-row">
+          <input type="text" id="task-input" class="task-input" placeholder="What needs doing?" autocomplete="off">
+          <button class="add-btn" id="add-btn">+</button>
+        </div>
+        <div class="add-task-options">
+          <div class="priority-selector" id="priority-selector">
+            <button class="priority-dot priority-high" data-priority="high" title="High"></button>
+            <button class="priority-dot priority-medium" data-priority="medium" title="Medium"></button>
+            <button class="priority-dot priority-low" data-priority="low" title="Low"></button>
+          </div>
+          <select class="category-select" id="category-select">
+            <option value="">category</option>
+            <option value="work">work</option>
+            <option value="personal">personal</option>
+            <option value="health">health</option>
+            <option value="learning">learning</option>
+            <option value="finance">finance</option>
+            <option value="creative">creative</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="task-list" id="task-list"></div>
+
+      <div class="completed-section" id="completed-section" style="display:none">
+        <button class="completed-header" id="completed-toggle">
+          <span>Completed (<span id="completed-count">0</span>)</span>
+          <span class="chevron" id="completed-chevron">›</span>
+        </button>
+        <div class="completed-list" id="completed-list"></div>
+      </div>
+
+      <div class="empty-state" id="empty-state" style="display:none">
+        <div class="zen-circle">円</div>
+        <p>Nothing here. Enjoy the stillness.</p>
+      </div>
+    </div>
+
+    <!-- Tab: Stats -->
+    <div class="tab-content" id="tab-stats" style="display:none">
+      <div class="section-title">TODAY'S SNAPSHOT</div>
+      <div class="hero-card" id="hero-card">
+        <div class="progress-ring-container">
+          <svg class="progress-ring" width="120" height="120">
+            <circle class="progress-ring-bg" cx="60" cy="60" r="52" />
+            <circle class="progress-ring-fill" id="progress-ring-fill" cx="60" cy="60" r="52" />
+          </svg>
+          <div class="progress-ring-label" id="progress-grade">-</div>
+        </div>
+        <div class="hero-meta" id="hero-meta">0/0 tasks · 0%</div>
+        <div class="hero-streak" id="hero-streak"></div>
+      </div>
+
+      <div class="section-title">THIS WEEK</div>
+      <div class="weekly-chart" id="weekly-chart"></div>
+
+      <div class="section-title">ACTIVITY</div>
+      <div class="heatmap-container" id="heatmap-container"></div>
+
+      <div class="section-title">ACHIEVEMENTS <span class="achievement-count" id="achievement-count">0/12 unlocked</span></div>
+      <div class="achievements-grid" id="achievements-grid"></div>
+
+      <div class="section-title">DEEP STATISTICS</div>
+      <div class="deep-stats-grid" id="deep-stats-grid"></div>
+    </div>
+
+    <!-- Tab: Wallpaper -->
+    <div class="tab-content" id="tab-wallpaper" style="display:none">
+      <div class="wallpaper-placeholder">
+        <div class="wallpaper-icon">◫</div>
+        <h2>Wallpaper customization is available on the mobile app</h2>
+        <p>Download the app to create custom wallpapers with your task progress</p>
+        <a href="#" class="wallpaper-btn">Download for Android</a>
+        <p class="wallpaper-note">Mac app coming soon</p>
+      </div>
+    </div>
+
+    <!-- Tab: Settings -->
+    <div class="tab-content" id="tab-settings" style="display:none">
+      <div class="section-title">ACCOUNT</div>
+      <div class="settings-card">
+        <div class="settings-row">
+          <span class="settings-label">Username</span>
+          <span class="settings-value accent" id="settings-username">@—</span>
+        </div>
+        <button class="settings-btn danger" id="logout-btn">Logout</button>
+      </div>
+
+      <div class="section-title">PREFERENCES</div>
+      <div class="settings-card">
+        <div class="settings-row last">
+          <span class="settings-label">Theme</span>
+          <div class="theme-selector" id="theme-selector">
+            <button class="theme-option" data-theme="system">System</button>
+            <button class="theme-option" data-theme="light">Light</button>
+            <button class="theme-option" data-theme="dark">Dark</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">SILICON CONNECTION</div>
+      <div class="settings-card">
+        <p class="settings-note">Silicon pairing is configured through the mobile app.</p>
+      </div>
+
+      <div class="section-title">ABOUT</div>
+      <div class="settings-card">
+        <div class="settings-row">
+          <span class="settings-label">Version</span>
+          <span class="settings-value">untodo web 1.0</span>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Tasks completed</span>
+          <span class="settings-value" id="about-completed">—</span>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Total tasks</span>
+          <span class="settings-value" id="about-total">—</span>
+        </div>
+        <div class="settings-row last">
+          <span class="settings-label">Made with</span>
+          <span class="settings-value">Silicon</span>
+        </div>
+      </div>
+
+      <div class="section-title">DATA</div>
+      <div class="settings-card">
+        <button class="settings-btn" id="export-json-btn">Export as JSON</button>
+        <button class="settings-btn" id="export-csv-btn">Export as CSV</button>
+      </div>
+    </div>
+
+    <!-- Login overlay -->
+    <div class="login-overlay" id="login-overlay" style="display:none">
+      <div class="login-card">
+        <div class="logo login-logo"><span class="logo-un">un</span><span class="logo-todo">todo</span></div>
+        <p class="login-subtitle">Enter your username to sync</p>
+        <input type="text" id="login-input" class="task-input" placeholder="username" autocomplete="off">
+        <button class="add-btn login-btn" id="login-btn">Continue</button>
+      </div>
+    </div>
+
+    <!-- Tab Bar -->
+    <nav class="tab-bar">
+      <button class="tab active" data-tab="today">
+        <span class="tab-icon">◉</span>
+        <span class="tab-label">Today</span>
+        <span class="tab-dot"></span>
+      </button>
+      <button class="tab" data-tab="stats">
+        <span class="tab-icon">◧</span>
+        <span class="tab-label">Stats</span>
+        <span class="tab-dot"></span>
+      </button>
+      <button class="tab" data-tab="wallpaper">
+        <span class="tab-icon">◫</span>
+        <span class="tab-label">Wallpaper</span>
+        <span class="tab-dot"></span>
+      </button>
+      <button class="tab" data-tab="settings">
+        <span class="tab-icon">⚙</span>
+        <span class="tab-label">Settings</span>
+        <span class="tab-dot"></span>
+      </button>
+    </nav>
+  </div>
+
+  <script type="module" src="app.js"></script>
 </body>
 </html>
