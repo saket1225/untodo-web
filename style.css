@@ -1,0 +1,375 @@
+/* ── Reset ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── Tokens ── */
+:root {
+  --bg: #FBF7F2;
+  --bg-card: #FFFFFF;
+  --text: #2C2418;
+  --text-muted: #8A7E6E;
+  --accent: #C4473A;
+  --accent-hover: #A83B30;
+  --border: #E8E0D6;
+  --shadow: 0 1px 3px rgba(44,36,24,.06);
+  --radius: 12px;
+  --font-heading: 'Instrument Serif', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --transition: .25s cubic-bezier(.4,0,.2,1);
+}
+
+[data-theme="dark"] {
+  --bg: #111110;
+  --bg-card: #1A1A18;
+  --text: #F0ECE6;
+  --text-muted: #7A756C;
+  --accent: #D4564A;
+  --accent-hover: #E06B60;
+  --border: #2A2926;
+  --shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+
+/* ── Base ── */
+html { font-size: 16px; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  transition: background var(--transition), color var(--transition);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ── */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ── Header ── */
+header {
+  padding: 40px 0 24px;
+}
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.logo {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  letter-spacing: -0.02em;
+}
+.logo span { color: var(--accent); }
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text);
+  transition: border-color var(--transition);
+}
+.theme-toggle:hover { border-color: var(--text-muted); }
+
+/* ── Date nav ── */
+.date-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.date-nav button {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  transition: all var(--transition);
+}
+.date-nav button:hover { border-color: var(--accent); color: var(--accent); }
+.date-label {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  min-width: 200px;
+  text-align: center;
+}
+
+/* ── Score badge ── */
+.score-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 0 8px;
+}
+.score-badge {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 4px 12px;
+  border-radius: 100px;
+  background: var(--accent);
+  color: #fff;
+}
+.score-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── Add form ── */
+.add-form {
+  display: flex;
+  gap: 8px;
+  padding: 16px 0;
+}
+.add-form input {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition);
+}
+.add-form input::placeholder { color: var(--text-muted); }
+.add-form input:focus { border-color: var(--accent); }
+.add-form button {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 12px 20px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--transition);
+  white-space: nowrap;
+}
+.add-form button:hover { background: var(--accent-hover); }
+
+/* ── Task list ── */
+.task-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 8px;
+}
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: all var(--transition);
+  animation: slideIn .3s ease-out;
+}
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+.task-item.deleting {
+  animation: slideOut .25s ease-in forwards;
+}
+
+/* ── Checkbox ── */
+.task-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: all var(--transition);
+}
+.task-check:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.task-check:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* ── Task text & delete ── */
+.task-title {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.4;
+  transition: all var(--transition);
+}
+.task-delete {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+  opacity: 0;
+  transition: all var(--transition);
+  border-radius: 6px;
+}
+.task-item:hover .task-delete { opacity: 1; }
+.task-delete:hover { color: var(--accent); background: rgba(196,71,58,.08); }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 48px 0;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+.empty-state .zen { font-size: 32px; margin-bottom: 12px; }
+
+/* ── Pomodoro ── */
+.pomodoro {
+  margin: 24px 0;
+  padding: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+}
+.pomo-title {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: var(--text-muted);
+}
+.pomo-time {
+  font-family: var(--font-mono);
+  font-size: 48px;
+  font-weight: 300;
+  letter-spacing: .04em;
+  margin-bottom: 20px;
+}
+.pomo-controls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.pomo-btn {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.pomo-btn:hover { border-color: var(--accent); color: var(--accent); }
+.pomo-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.pomo-btn.primary:hover { background: var(--accent-hover); }
+
+/* ── Login ── */
+.login-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80dvh;
+  gap: 24px;
+  text-align: center;
+}
+.login-screen h1 {
+  font-family: var(--font-heading);
+  font-size: 48px;
+}
+.login-screen h1 span { color: var(--accent); }
+.login-screen p {
+  color: var(--text-muted);
+  font-size: 15px;
+  max-width: 320px;
+}
+.login-form {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 360px;
+}
+.login-form input {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition);
+}
+.login-form input:focus { border-color: var(--accent); }
+.login-form button {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 14px 24px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.login-form button:hover { background: var(--accent-hover); }
+
+/* ── Footer ── */
+footer {
+  text-align: center;
+  padding: 32px 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ── Animations ── */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(60px); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  header { padding: 24px 0 16px; }
+  .logo { font-size: 24px; }
+  .pomo-time { font-size: 40px; }
+  .task-delete { opacity: 1; }
+}
